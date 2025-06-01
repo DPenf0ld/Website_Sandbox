@@ -12,7 +12,7 @@
       addMessage(userMsg, 'user');
 
       try {
-        const res = await fetch('https://dmpaiautomation.app.n8n.cloud/webhook-test/4d2d711c-f911-41ef-9da9-0ca81c37c9ae', {
+        const res = await fetch('https://dmpaiautomation.app.n8n.cloud/webhook/4d2d711c-f911-41ef-9da9-0ca81c37c9ae', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: userMsg })
