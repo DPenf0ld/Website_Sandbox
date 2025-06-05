@@ -1,22 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chat with AI Assistant</title>
-  <!-- Reference the external CSS file -->
-  <link rel="stylesheet" href="styles.css" />
+  <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
 </head>
-<body>
-  <div class="chat-container">
-    <div class="messages" id="messages"></div>
-    <form id="chatForm">
-      <input type="text" id="userMessage" placeholder="Type your message..." required />
-      <button type="submit">Send</button>
-    </form>
-  </div>
-  <!-- Reference the external JavaScript file -->
-  <script src="script.js"></script>
-</body>
-</html>
 
+<body>
+  <script type="module">
+    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+    createChat({
+      webhookUrl: 'https://dmpaiautomation.app.n8n.cloud/webhook/71ccd611-1e13-4b0f-aba5-8b2f0831c004/chat'
+    });
+  </script>
+</body>
+
+</html>
