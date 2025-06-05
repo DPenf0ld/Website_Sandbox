@@ -3,84 +3,136 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chat with AI Assistant</title>
+  <title>Switchable AI Agent</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9fafb;
+      padding: 20px;
+      text-align: center;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #3b82f6;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2563eb;
+    }
+  </style>
 </head>
 <body>
-  <script type="module" defer>
-  import Chatbot from "https://cdn.n8nchatui.com/v1/embed.js";
-  Chatbot.init({
-    "n8nChatUrl": "https://dmpaiautomation.app.n8n.cloud/webhook/71ccd611-1e13-4b0f-aba5-8b2f0831c004/chat", // Replace this with your n8n chat webhook URL
-    "metadata": {}, // Include any custom data to send with each message to your n8n workflow
-    "theme": {
-      "button": {
-        "backgroundColor": "#78a6e3",
-        "right": 10,
-        "bottom": 50,
-        "size": 100,
-        "iconColor": "#000000",
-        "customIconSrc": "https://cdn-icons-png.flaticon.com/512/607/607410.png",
-        "customIconSize": 81,
-        "customIconBorderRadius": 27,
-        "autoWindowOpen": {
-          "autoOpen": false,
-          "openDelay": 2
-        },
-        "borderRadius": "rounded"
+  <h1>Switch Between AI Agents</h1>
+  <button onclick="loadAgent('booking')">Booking Agent</button>
+  <button onclick="loadAgent('support')">Support Agent</button>
+
+  <div id="chatbot-container"></div>
+
+  <script>
+    let currentScript;
+
+    const config = {
+      booking: {
+        url: "https://dmpaiautomation.app.n8n.cloud/webhook/71ccd611-1e13-4b0f-aba5-8b2f0831c004/chat",
+        title: "Booking Agent",
+        welcome: "Hello! How can I help with your booking?"
       },
-      "tooltip": {
-        "showTooltip": true,
-        "tooltipMessage": "Booking Agent",
-        "tooltipBackgroundColor": "#78a6e3",
-        "tooltipTextColor": "#1c1c1c",
-        "tooltipFontSize": 15
-      },
-      "chatWindow": {
-        "borderRadiusStyle": "rounded",
-        "avatarBorderRadius": 20,
-        "messageBorderRadius": 6,
-        "showTitle": true,
-        "title": "Booking Agent",
-        "titleAvatarSrc": "https://cdn-icons-png.flaticon.com/512/607/607410.png",
-        "welcomeMessage": "Hello! How can I help?",
-        "errorMessage": "Sorry the system is currently down, please try again later.",
-        "backgroundColor": "#c9e2fd",
-        "height": 600,
-        "width": 1000,
-        "fontSize": 16,
-        "starterPrompts": [
-          "I want to book a Remodel",
-          "What days are free?"
-        ],
-        "starterPromptFontSize": 15,
-        "clearChatOnReload": false,
-        "botMessage": {
-          "backgroundColor": "#78a6e3",
-          "textColor": "#fafafa",
-          "showAvatar": true,
-          "avatarSrc": "https://cdn-icons-png.flaticon.com/512/607/607410.png"
-        },
-        "userMessage": {
-          "backgroundColor": "#fff6f3",
-          "textColor": "#050505",
-          "showAvatar": true,
-          "avatarSrc": "https://cdn4.iconfinder.com/data/icons/unisex-avatar/1000/unisex_avatar-1024.png"
-        },
-        "textInput": {
-          "placeholder": "Type your query",
-          "backgroundColor": "#ffffff",
-          "textColor": "#1e1e1f",
-          "sendButtonColor": "#78a6e3",
-          "maxChars": 200,
-          "maxCharsWarningMessage": "You exceeded the characters limit. Please input less than 50 characters.",
-          "autoFocus": false,
-          "borderRadius": 6,
-          "sendButtonBorderRadius": 50
-        }
+      support: {
+        url: "https://dmpaiautomation.app.n8n.cloud/webhook/3cf1ee28-1caa-48df-bf52-d439c9d4c415/chat",
+        title: "Support Agent",
+        welcome: "Hi there! Need help with something?"
       }
+    };
+
+    function loadAgent(type) {
+      // Remove previous instance
+      if (currentScript) {
+        currentScript.remove();
+        document.querySelector("#n8n-chat-container")?.remove();
+      }
+
+      const script = document.createElement("script");
+      script.type = "module";
+      script.textContent = `
+        import Chatbot from "https://cdn.n8nchatui.com/v1/embed.js";
+        Chatbot.init({
+          n8nChatUrl: "${config[type].url}",
+          metadata: {},
+          theme: {
+            button: {
+              backgroundColor: "#78a6e3",
+              right: 10,
+              bottom: 50,
+              size: 100,
+              iconColor: "#000000",
+              customIconSrc: "https://cdn-icons-png.flaticon.com/512/607/607410.png",
+              customIconSize: 81,
+              customIconBorderRadius: 27,
+              autoWindowOpen: { autoOpen: true, openDelay: 0 },
+              borderRadius: "rounded"
+            },
+            tooltip: {
+              showTooltip: true,
+              tooltipMessage: "${config[type].title}",
+              tooltipBackgroundColor: "#78a6e3",
+              tooltipTextColor: "#1c1c1c",
+              tooltipFontSize: 15
+            },
+            chatWindow: {
+              borderRadiusStyle: "rounded",
+              avatarBorderRadius: 20,
+              messageBorderRadius: 6,
+              showTitle: true,
+              title: "${config[type].title}",
+              titleAvatarSrc: "https://cdn-icons-png.flaticon.com/512/607/607410.png",
+              welcomeMessage: "${config[type].welcome}",
+              errorMessage: "Sorry the system is currently down.",
+              backgroundColor: "#c9e2fd",
+              height: 600,
+              width: 1000,
+              fontSize: 16,
+              starterPrompts: ["Ask a question", "I need help"],
+              starterPromptFontSize: 15,
+              clearChatOnReload: false,
+              botMessage: {
+                backgroundColor: "#78a6e3",
+                textColor: "#fafafa",
+                showAvatar: true,
+                avatarSrc: "https://cdn-icons-png.flaticon.com/512/607/607410.png"
+              },
+              userMessage: {
+                backgroundColor: "#fff6f3",
+                textColor: "#050505",
+                showAvatar: true,
+                avatarSrc: "https://cdn4.iconfinder.com/data/icons/unisex-avatar/1000/unisex_avatar-1024.png"
+              },
+              textInput: {
+                placeholder: "Type your query",
+                backgroundColor: "#ffffff",
+                textColor: "#1e1e1f",
+                sendButtonColor: "#78a6e3",
+                maxChars: 200,
+                borderRadius: 6,
+                sendButtonBorderRadius: 50
+              }
+            }
+          }
+        });
+      `;
+      document.body.appendChild(script);
+      currentScript = script;
     }
-  });
-</script>
+
+    // Load default on page load
+    loadAgent('booking');
+  </script>
 </body>
 </html>
+
 
 
